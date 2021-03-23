@@ -1,5 +1,6 @@
 import { Message } from "discord.js";
 import natural, { PorterStemmer } from "natural";
+import Sentiment from "../entities/Sentiment";
 import logger from "../logger/logger";
 
 class MessageAnalyzerService {
@@ -13,11 +14,11 @@ class MessageAnalyzerService {
     this._sentimentAnalyzer = new natural.SentimentAnalyzer("English", PorterStemmer, "afinn");
   }
 
-  getSentiment(message: Message): number {
+  getSentiment(message: Message): Sentiment {
     const tokens = this._tokenizer.tokenize(message.content);
-    const sentiment = this._sentimentAnalyzer.getSentiment(tokens);
-    logger.debug(`[MessageAnalyzerService.getSentiment] detected sentiment: ${sentiment}`, message);
-    return sentiment;
+    const sentimentValue = this._sentimentAnalyzer.getSentiment(tokens);
+    logger.debug(`[MessageAnalyzerService.getSentiment] detected sentiment value: ${sentimentValue}`, message);
+    return new Sentiment(sentimentValue);
   }
 
   getQuestions(message: Message): string[] {

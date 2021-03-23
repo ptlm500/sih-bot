@@ -1,8 +1,8 @@
 import Discord, { Message } from "discord.js";
 import shouldHandleMessage from "../message-handler/utils";
 import logger from "../logger/logger";
-import getLmgtfyReply from "../replies/getLmgtfyReply";
 import MessageAnalyzerService from "../services/MessageAnalyzerService";
+import getReply from "../replies/getReply";
 
 const client = new Discord.Client();
 
@@ -22,20 +22,7 @@ client.on("message", (message: Message) => {
   if (shouldHandleMessage(message)) {
     const sentiment = messageAnalyzerService.getSentiment(message);
     const questions = messageAnalyzerService.getQuestions(message);
-    const links = questions.map(getLmgtfyLink);
-
-    let reply = "";
-    if (sentimentIsNegative(sentiment)) {
-      reply = "That wasn't very nice!";
-    }
-
-    const lmgtfyReply = getLmgtfyReply(links);
-
-    if (reply && lmgtfyReply) {
-      reply += ` But don't worry, ${lmgtfyReply}`
-    } else if (lmgtfyReply) {
-      reply += lmgtfyReply;
-    }
+    const reply = getReply(sentiment, questions);
 
     if (reply.length > 0) {
       message.reply(reply);
@@ -44,13 +31,3 @@ client.on("message", (message: Message) => {
 });
 
 export default client;
-
-function sentimentIsNegative(sentiment: number) {
-  return sentiment < 0;
-}
-
-function getLmgtfyLink(question: string) {
-  const trimmedQuestion = question.slice(0, -1);
-  const encodedQuestion = encodeURIComponent(trimmedQuestion);
-  return `https://lmgtfy.app/?q=${encodedQuestion}`;
-}
