@@ -17,7 +17,7 @@ class MessageAnalyzerService {
   getSentiment(message: Message): Sentiment {
     const tokens = this._tokenizer.tokenize(message.content);
     const sentimentValue = this._sentimentAnalyzer.getSentiment(tokens);
-    logger.debug(`[MessageAnalyzerService.getSentiment] detected sentiment value: ${sentimentValue}`, message);
+    logger.debug(`🔎 [MessageAnalyzerService.getSentiment] detected sentiment value: ${sentimentValue}`, message);
     return new Sentiment(sentimentValue);
   }
 
